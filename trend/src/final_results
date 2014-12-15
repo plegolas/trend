@@ -1,0 +1,95 @@
+gama: 0.1
+theta: 0.65
+detectionsLimit: 3
+NSMOOTH: 1
+NREF: 50
+NOBS: 40
+NTREND: 10
+NTRESH: 0.1
+R+ size: 70
+R- size: 70
+Detecting... 
+196 trends detected
+Positive trades: 85
+Negative trades: 111
+Accuracy: 43.3673%
+Initial funds: 10000
+Final funds: 7135.01
+Return: -28.6499%
+-------------
+gama: 0.1
+theta: 0.65
+detectionsLimit: 3
+NSMOOTH: 1
+NREF: 50
+NOBS: 40
+NTREND: 10
+NTRESH: 0.1
+R+ size: 70
+R- size: 70
+Detecting... 
+196 trends detected
+Positive trades: 85
+Negative trades: 111
+Accuracy: 43.3673%
+Initial funds: 10000
+Final funds: 7135.01
+Return: -28.6499%
+-------------
+gama: 0.1
+theta: 0.65
+detectionsLimit: 3
+NSMOOTH: 10
+NREF: 50
+NOBS: 40
+NTREND: 10
+NTRESH: 0.1
+R+ size: 70
+R- size: 70
+Detecting... 
+194 trends detected
+Positive trades: 85
+Negative trades: 109
+Accuracy: 43.8144%
+Initial funds: 10000
+Final funds: 6651.39
+Return: -33.4861%
+-------------
+gama: 0.1
+theta: 0.65
+detectionsLimit: 5
+NSMOOTH: 5
+NREF: 50
+NOBS: 40
+NTREND: 10
+NTRESH: 0.1
+R+ size: 70
+R- size: 70
+Detecting... 
+130 trends detected
+Positive trades: 55
+Negative trades: 75
+Accuracy: 42.3077%
+Initial funds: 10000
+Final funds: 4694.67
+Return: -53.0533%
+-------------
+gama: 0.1
+theta: 0.65
+detectionsLimit: 1
+NSMOOTH: 5
+NREF: 50
+NOBS: 40
+NTREND: 10
+NTRESH: 0.1
+R+ size: 70
+R- size: 70
+Detecting... 
+391 trends detected
+Positive trades: 174
+Negative trades: 217
+Accuracy: 44.5013%
+Initial funds: 10000
+Final funds: 8116.73
+Return: -18.8327%
+-------------

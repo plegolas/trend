@@ -1,0 +1,81 @@
+#!/bin/bash
+
+#ordem dos parametros
+# gama theta detectionsLimit NSMOOTH NREF NOBS NTREND NTRESH
+
+#tipos dos parametros
+# gama float
+# theta float
+# detectionsLimit int
+# NSMOOTH int
+# NREF int
+# NOBS int
+# NTREND int
+# NTRESH float
+
+# * Foram exploradas todas as combinacoes possiveis para as listagens
+# * dos parametros a seguir, exceto as incompativeis (Nobs > Nref, p. ex.).
+# * Para cada combinacao foram executados 5 testes aleatorios.
+# * 
+# * gama = 0.1, 1, 10
+# * Nobs = 10, 80, 115, 150
+# * Nsmooth = 10, 80, 115, 150
+# * Href = 3, 5, 7, 9
+# * Dreq = 1, 3, 5
+# * theta = 0.65, 1, 3
+
+# 1 1 3 5 10 5 5 0.1
+
+# linhas de teste
+gamaVec=(0.1 1 10)
+thetaVec=(0.65 1 3)
+detLimVec=(1 3 5)
+nSmoothVec=(1 5 10)
+nRefVec=(10 20 30)
+nObsVec=(5 10 15)
+nTrendVec=(5 10 15)
+nTreshVec=(0.1 0.12)
+
+#gamaVec=(0.1 1 10)
+#thetaVec=(0.65 1 3)
+#detLimVec=(1 3 5)
+#nSmoothVec=(1 5 10 40)
+#nRefVec=(10 20 50)
+#nObsVec=(5 10 40)
+#nTrendVec=(5 10 15)
+#nTreshVec=(0.1 0.12)
+
+for gama in ${gamaVec[@]} 
+do
+	for theta in ${thetaVec[@]} 
+	do
+		for detLim in ${detLimVec[@]} 
+		do
+			for nSmoot in ${nSmoothVec[@]} 
+			do
+				for nRef in ${nRefVec[@]} 
+				do
+					for nObs in ${nObsVec[@]} 
+					do
+						if [ $nObs -gt $nRef ] #condicao invalida onde o sinal observado eh maior que o referencia
+						then
+							continue
+						fi
+						for nTrend in ${nTrendVec[@]} 
+						do
+							for nTresh in ${nTreshVec[@]} 
+							do
+								./trend $gama $theta $detLim $nSmoot $nRef $nObs $nTrend $nTresh
+							done
+						done
+					done
+				done
+			done
+		done
+	done
+done
+
+
+
+
+
