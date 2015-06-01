@@ -55,6 +55,8 @@ class signalSource{
 		
 		signal nextBlock( int skip_size );
 		
+		vector<float> getSource();
+		
 		pair<time_t,float> lastValue();
 		
 		pair<time_t,float> nextValue();

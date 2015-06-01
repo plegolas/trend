@@ -9,18 +9,106 @@
 #include "detection.hpp"
 #include "set_util.hpp"
 #include "approach_1.hpp"
+#include "approach_2.hpp"
 
 #define FLAG_CREATE_SETS "-c"
 
-//~ #define TRAINING_SOURCE_FN "../data/training_data.csv"
-//~ #define TEST_SOURCE_FN "../data/test_data.csv"
-#define TRAINING_SOURCE_FN "../data/PETR4.SA1"
+//TODO: trocar TEST_FNs por nome do arquivo que contem os nomes dos arquivos do teste especifico
+
+//~ #define TRAINING_SOURCE_FN "../data/files_training"
+//~ #define TEST_SOURCE_FN "../data/files_test"
+#define TRAINING_SOURCE_FN "../data/PETR4.SA2"
 #define TEST_SOURCE_FN "../data/PETR4.SA3"
 #define RPLUS_FN "../data/rplus"
 #define RMINUS_FN "../data/rminus"
 #define TRENDS_FN "../data/trend"
 #define LOG_FN "log"
 #define DETECTIONS_FN "detections"
+
+
+//~ funcoes
+void load_source( signalSource *sigSource, const char* filename );
+string new_filename( string fn, int nb );
+detection get_detection( signalSource source, signal sig );
+list<detection> trends_result( signalSource source, list< pair<time_t,signal> > trends );
+void print_detections( string fn, list<detection> *detections );
+void final_result( list<detection> *detections );
+string final_result_csv( list<detection> *detections, int plussz, int minussz );
+string final_result_header();
+bool is_sets_creation( int argc, char *argv[] );
+
+//~ 
+//~ Funcao principal
+//~ 
+int main( int argc, char *argv[] ){
+
+	//configurar arquivo de log
+	std::filebuf flog ;
+    flog.open( LOG_FN, std::ios::out ) ;
+    std::clog.rdbuf( &flog ) ;
+	
+	//inicializar parametros
+	params parameters;
+	if( !parameters.initialize( argc, argv ) ) {
+		cout << "Initialization error. Bad, bad parameters..." << endl;
+		return 1;
+	}
+	//~ parameters.print();
+	
+	//conjuntos de exemplos positivos e negativos
+	vector<signal> rplus, rminus;
+	set_util setutil; //operacoes nos conjuntos
+	//~ approach_1 approach; //primeira abordagem
+	approach_2 approach; //segunda abordagem (com medias moveis)
+	
+	//serie temporal
+	signalSource sigSource;
+	
+	//~ if( is_sets_creation(argc, argv) ){
+		//carrega a serie temporal, constroi os conjuntos positivo e 
+		// negativo e os salva em arquivos
+		clog << "Build sets mode" << endl;
+		load_source( &sigSource, TRAINING_SOURCE_FN );
+		approach.build_sets( sigSource, &rplus, &rminus );
+		//~ setutil.print( RPLUS_FN, &rplus);
+		//~ setutil.print( RMINUS_FN, &rminus);
+		//~ return 0;
+	//~ }
+	
+	clog << "Run mode" << endl;
+	//~ cout << parameters.header_csv() << "," << final_result_header() << endl;
+	//~ cout << parameters.to_string_csv() << ",";
+	cout << parameters.to_string_csv() << "\t";
+	
+	//carrega os conjuntos positivo e negativo
+	//~ setutil.load( &rplus, RPLUS_FN );
+	//~ setutil.load( &rminus, RMINUS_FN );
+	if( rplus.empty() || rminus.empty() ){
+		cout << "At least one set is empty. Aborting." << endl;
+		return 1;
+	}
+	setutil.transform( &rplus );
+	setutil.transform( &rminus );
+	
+	load_source( &sigSource, TEST_SOURCE_FN );
+	
+	
+	//~ cout << "Detecting... " << endl;
+	
+	list< pair<time_t,signal> > trends;
+	trends = detect( sigSource, rplus, rminus, params::gama, params::theta, params::detectionsLimit );
+	
+	list<detection> detections = trends_result( sigSource, trends );
+	
+	print_detections( DETECTIONS_FN, &detections );
+	//~ final_result( &detections );
+	cout << final_result_csv( &detections, rplus.size(), rminus.size() ) << endl;
+	
+	//~ cout << "-------------" << endl;
+}
+
+
+
 
 void load_source( signalSource *sigSource, const char* filename ){
 	sigSource->clear();
@@ -174,72 +262,6 @@ bool is_sets_creation( int argc, char *argv[] ){
 	return false;
 }
 
-int main( int argc, char *argv[] ){
-
-	//configurar arquivo de log
-	std::filebuf flog ;
-    flog.open( LOG_FN, std::ios::out ) ;
-    std::clog.rdbuf( &flog ) ;
-	
-	//inicializar parametros
-	params parameters;
-	if( !parameters.initialize( argc, argv ) ) {
-		cout << "Initialization error. Bad, bad parameters..." << endl;
-		return 1;
-	}
-	//~ parameters.print();
-	
-	//conjuntos de exemplos positivos e negativos
-	vector<signal> rplus, rminus;
-	set_util setutil; //operacoes nos conjuntos
-	approach_1 approach; //primeira abordagem
-	
-	//serie temporal
-	signalSource sigSource;
-	
-	//~ if( is_sets_creation(argc, argv) ){
-		//carrega a serie temporal, constroi os conjuntos positivo e 
-		// negativo e os salva em arquivos
-		clog << "Build sets mode" << endl;
-		load_source( &sigSource, TRAINING_SOURCE_FN );
-		approach.build_sets( sigSource, &rplus, &rminus );
-		//~ setutil.print( RPLUS_FN, &rplus);
-		//~ setutil.print( RMINUS_FN, &rminus);
-		//~ return 0;
-	//~ }
-	
-	clog << "Run mode" << endl;
-	//~ cout << parameters.header_csv() << "," << final_result_header() << endl;
-	//~ cout << parameters.to_string_csv() << ",";
-	cout << parameters.to_string_csv() << "\t";
-	
-	//carrega os conjuntos positivo e negativo
-	//~ setutil.load( &rplus, RPLUS_FN );
-	//~ setutil.load( &rminus, RMINUS_FN );
-	if( rplus.empty() || rminus.empty() ){
-		cout << "At least one set is empty. Aborting." << endl;
-		//~ cout << "-------------" << endl;
-		return 1;
-	}
-	setutil.transform( &rplus );
-	setutil.transform( &rminus );
-	
-	load_source( &sigSource, TEST_SOURCE_FN );
-	
-	
-	//~ cout << "Detecting... " << endl;
-	
-	list< pair<time_t,signal> > trends;
-	trends = detect( sigSource, rplus, rminus, params::gama, params::theta, params::detectionsLimit );
-	
-	list<detection> detections = trends_result( sigSource, trends );
-	
-	print_detections( DETECTIONS_FN, &detections );
-	//~ final_result( &detections );
-	cout << final_result_csv( &detections, rplus.size(), rminus.size() ) << endl;
-	
-	//~ cout << "-------------" << endl;
-}
 
 
 //~ Cabecalho da saida padrao, , , 

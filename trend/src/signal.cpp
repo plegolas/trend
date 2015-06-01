@@ -7,6 +7,7 @@ signal::signal(){
 
 signal::signal( std::vector<float> s ){ 
 	serie.assign( s.begin(), s.end() ); 
+	transformed = false;
 }
 	
 signal::~signal(){ 

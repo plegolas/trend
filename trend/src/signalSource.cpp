@@ -99,3 +99,15 @@ signal signalSource::nextBlock( int skip_size ){
 	
 	return lastBlock();
 }
+
+//return a vector with all the prices in the source time serie
+vector<float> signalSource::getSource(){
+	vector<float> vserie;
+	SOURCEIT it = serie.begin();
+	while( it != serie.end() ){
+		//~ cout << it->first << " == " << it->second << endl;
+		vserie.push_back( it->second );
+		it++;
+	}
+	return vserie;
+}

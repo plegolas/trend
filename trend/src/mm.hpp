@@ -6,16 +6,17 @@
 class mm{
 	
 	private:
-		//quantidade de valores
-		int period;
-		
 		std::vector<float> values;
+		bool is_full = false;
+		int oldest_value;
 	
 	public:
 		//media dos valores
 		float average();
 		
-		int get_period();
+		int size();
+		
+		void set_size( int size );
 		
 		void init( std::vector<float> values_ );
 		
