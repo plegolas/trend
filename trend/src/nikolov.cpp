@@ -2,11 +2,15 @@
 
 //-----------------------------
 
-list< pair<time_t,signal> > detect( signalSource source, vector<signal> rplus, vector<signal> rminus, 
+//~ list< pair<time_t,signal> > detect( signalSource source, vector<signal> rplus, vector<signal> rminus, 
+vector<int> detect( signalSource source, vector<signal> rplus, vector<signal> rminus, 
 				double gama, double theta, int detectionsLimit ){
 	
 	source.configure( params::NOBS + params::NSMOOTH );
-	list< pair<time_t,signal> > detections;
+	//~ list< pair<time_t,signal> > detections;
+	vector<int> detections ( source.lenght(), 0 ); //vetor de decisao
+	int dIdx = params::NOBS + params::NSMOOTH -1; //indice do vetor de decisao
+	//TODO: verificar sincronia do dIdx com source
 	
 	int cd = 0; //consecutive detections
 	do{
@@ -35,18 +39,20 @@ list< pair<time_t,signal> > detect( signalSource source, vector<signal> rplus, v
 		double probPos = probClass(posDist, gama);
 		double probNeg = probClass(negDist, gama);
 		double R = probPos / probNeg;
-		//~ double R = probClass(posDist, gama) / probClass(negDist, gama);
 		
 		if( R > theta ){
 			cd++;
 			if( cd >= detectionsLimit ){
-				pair<time_t,signal> p (source.get_time(), s);
-				detections.push_back( p );
+				//~ pair<time_t,signal> p (source.get_time(), s);
+				//~ detections.push_back( p );
+				detections[dIdx] = 1;
 				cd = 0;
 			}
 		} else {
+			detections[dIdx] = -1;
 			cd = 0;
 		}
+		dIdx++;
 	}while(source.hasData());
 	
 	return detections;
