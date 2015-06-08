@@ -89,11 +89,6 @@ vector<int> approach_2::decision_ma( vector<float> vsource, int period1, int per
 			dif = -1;
 		}
 		difAnt = dif;
-
-/*		//antigo teste de verificacao de cruzamento
-		if( sma_avg[i-1] < lma_avg[i-1] && sma_avg[i] > lma_avg[i] ){ //cross up
-		} else if ( last_sma > last_lma && sma_avg < lma_avg ){ //cross down
-		} */
 	}	
 	
 	return decision;

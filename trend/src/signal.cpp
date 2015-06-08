@@ -157,7 +157,6 @@ void signal::smoothing(){
 
 void signal::log_scale(){
 	for( int i = 0; i < serie.size(); i++ ){
-	//~ for( int i = 1; i < serie.size(); i++ ){
 		if( serie[i] == 0 ) serie[i] = 0.01; //TODO: verificar log de zero
 		serie[i] = log(serie[i]);
 	}

@@ -10,15 +10,18 @@
 #include "set_util.hpp"
 #include "approach_1.hpp"
 #include "approach_2.hpp"
+#include "simulator.hpp"
+
 
 #define FLAG_CREATE_SETS "-c"
 
 //TODO: trocar TEST_FNs por nome do arquivo que contem os nomes dos arquivos do teste especifico
 
-//~ #define TRAINING_SOURCE_FN "../data/files_training"
-//~ #define TEST_SOURCE_FN "../data/files_test"
-#define TRAINING_SOURCE_FN "../data/PETR4.SA2"
-#define TEST_SOURCE_FN "../data/PETR4.SA3"
+#define TRAINING_SOURCE_FN "../data/00file_training"
+#define TEST_SOURCE_FN "../data/00file_test"
+#define VALIDATION_SOURCE_FN "../data/00file_validation"
+//~ #define TRAINING_SOURCE_FN "../data/PETR4.SA2"
+//~ #define TEST_SOURCE_FN "../data/PETR4.SA3"
 #define RPLUS_FN "../data/rplus"
 #define RMINUS_FN "../data/rminus"
 #define TRENDS_FN "../data/trend"
@@ -36,7 +39,6 @@ void final_result( list<detection> *detections );
 string final_result_csv( list<detection> *detections, int plussz, int minussz );
 string final_result_header();
 bool is_sets_creation( int argc, char *argv[] );
-void simulator( vector<float> source, vector<int> decision );
 
 //~ 
 //~ Funcao principal
@@ -79,15 +81,14 @@ int main( int argc, char *argv[] ){
 	clog << "Run mode" << endl;
 	//~ cout << parameters.header_csv() << "," << final_result_header() << endl;
 	//~ cout << parameters.to_string_csv() << ",";
-	cout << parameters.to_string_csv() << "\t";
+	cout << parameters.to_string_csv() << " ";
 	
 	//carrega os conjuntos positivo e negativo
-	//~ setutil.load( &rplus, RPLUS_FN );
-	//~ setutil.load( &rminus, RMINUS_FN );
 	if( rplus.empty() || rminus.empty() ){
 		cout << "At least one set is empty. Aborting." << endl;
 		return 1;
 	}
+	cout << rplus.size() << " " << rminus.size() << " ";
 	setutil.transform( &rplus );
 	setutil.transform( &rminus );
 	
@@ -97,12 +98,8 @@ int main( int argc, char *argv[] ){
 	//~ cout << "Detecting... " << endl;
 	
 	//~ list< pair<time_t,signal> > trends;
-	//~ trends = detect( sigSource, rplus, rminus, params::gama, params::theta, params::detectionsLimit );
 	vector<int> decision;
 	decision = detect( sigSource, rplus, rminus, params::gama, params::theta, params::detectionsLimit );
- 	//~ decision = approach.decision_ma( sigSource.getSource(), params::sma_period, params::lma_period );
-
-
 
 	//ajusta o vetor de decisao
 	ofstream f_decision;
@@ -118,85 +115,19 @@ int main( int argc, char *argv[] ){
 	}
 	f_decision.close();
 	
-	simulator( sigSource.getSource(), decision );
+	simulator sim;
+	sim.set_order_size( 300 ); //quantidade de acoes negociadas por ordem
+	sim.set_taxes( 10 ); //custo de uma operacao de compra ou venda
+	sim.set_init_funds( 10000 ); //valor financeiro inicial
+	sim.run( sigSource.getSource(), decision ); //executa simulacao
 	
 	//~ list<detection> detections = trends_result( sigSource, trends );
-	
 	//~ print_detections( DETECTIONS_FN, &detections );
 //	//~ final_result( &detections );
 	//~ cout << final_result_csv( &detections, rplus.size(), rminus.size() ) << endl;
-	
 	//~ cout << "-------------" << endl;
 }
 
-
-
-void simulator( vector<float> source, vector<int> decision ){
-	int pos, neg;
-	pos = neg = 0;
-	float init_funds, funds;
-	init_funds = funds = 10000;
-	float taxes = 10; //taxas por operacao
-	int stock_amount = 300; //quantidade de ativos por operacao
-	float profit = 0;
-	
-	float priceIn = 0, priceOut = 0; //preco de entrada e saida
-	int lastOp = 0; //ultima operacao: 1=compra, -1=venda, 0=nenhuma
-
-	ofstream f_profit;
-	f_profit.open( "00funds" );
-	for( int i = 0; i < decision.size(); i++ ){
-		if( decision[i] != 0 ){
-			profit = 0;
-			priceOut = source[i];
-			if( decision[i] == 1 ){//compra
-				//fecha venda
-				if( lastOp == -1 ){
-					profit = priceIn-priceOut;
-				}
-				lastOp = 1;
-			} else { //venda
-				if( lastOp == 1 ){
-					profit = priceOut-priceIn;
-				}
-				lastOp = -1;
-			}
-			
-			if( profit >= 0 )
-				pos++;
-			else 
-				pos--;
-			funds += (profit*stock_amount)-taxes;
-			
-			priceIn = priceOut;
-		}
-		
-		if( i+1 == decision.size() && lastOp != 0 ){ //ultimo valor, fecha operacao em aberto
-			priceOut = source[i];
-			if( lastOp == 1 ){
-				profit = priceOut-priceIn;
-			} else if( lastOp == -1 ){
-				profit = priceIn-priceOut;
-			}
-				
-			if( profit >= 0 )
-				pos++;
-			else 
-				pos--;
-			funds += (profit*stock_amount)-taxes;
-		}
-		f_profit << funds << endl;
-	}
-	f_profit.close();
-	
-	//~ cout << "Trends detected: " << detections->size() << endl;
-	cout << "Positive trades: " << pos << endl;
-	cout << "Negative trades: " << neg << endl;
-	cout << "Accuracy: " << (float)pos/((float)pos+(float)neg)*100 << "%" << endl;
-	cout << "Initial funds: " << init_funds << endl;
-	cout << "Final funds: " << funds << endl;
-	cout << "Return: " << ((funds/init_funds)-1)*100 << "%" << endl;
-}
 
 
 
@@ -355,6 +286,6 @@ bool is_sets_creation( int argc, char *argv[] ){
 
 
 //~ Cabecalho da saida padrao, , , 
-//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,NTREND,NTRESH,R+size,R-Size,Detected,+Trades,-Trades,Acc,InitS,FinalS,Return
-//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,NTREND,NTRESH,R+size,R-Size,Detected,+Trades,-Trades,Acc,InitS,FinalS,Return
+//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,NTREND,NTRESH,R+size,R-Size,+Trades,-Trades,Acc,InitS,FinalS,Return
+//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,NTREND,NTRESH,R+size,R-Size,+Trades,-Trades,Acc,InitS,FinalS,Return
 

@@ -12,8 +12,8 @@ int params::NOBS = 40;
 int params::NTREND = 15;
 double params::NTRESH = 0.1;
 
-int params::sma_period = 40;
-int params::lma_period = 49;
+int params::sma_period = 9; //40
+int params::lma_period = 22; //49
 
 
 void params::print(){
