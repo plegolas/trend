@@ -4,7 +4,9 @@
 void simulator::run( vector<float> source, vector<int> decision ){
 	
 	float priceIn = 0, priceOut = 0; //preco de entrada e saida
+	float priceTax = 0; //taxas da operacao
 	int lastOp = 0; //ultima operacao: 1=compra, -1=venda, 0=nenhuma
+	float accumProfit = 1; //lucro acumulado
 	funds = init_funds;
 
 	ofstream f_profit;
@@ -13,57 +15,50 @@ void simulator::run( vector<float> source, vector<int> decision ){
 		if( decision[i] != 0 ){
 			profit = 0;
 			priceOut = source[i];
+			priceTax = taxes( source[i] );
 			if( decision[i] == 1 ){//compra
-				//fecha venda
-				if( lastOp == -1 ){
-					profit = priceIn-priceOut;
+				priceOut += priceTax;
+				if( lastOp == -1 ){//fecha venda
+					profit = (priceIn-priceOut)/priceIn;
+					//~ profit = priceIn-priceOut;
 				}
 				lastOp = 1;
 			} else { //venda
-				if( lastOp == 1 ){
-					profit = priceOut-priceIn;
+				priceOut -= priceTax;
+				if( lastOp == 1 ){//fecha a compra
+					profit = (priceOut-priceIn)/priceIn;
+					//~ profit = priceOut-priceIn;
 				}
 				lastOp = -1;
 			}
 			
+			//~ if( profit >= 0 )
 			if( profit >= 0 )
 				pos_trades++;
 			else 
 				neg_trades++;
-			funds += (profit*order_size)-taxes;
+			//~ funds += (profit*order_size)-taxes;
+			//~ funds *= (1 + profit);
+			accumProfit *= (1 + profit);
 			
 			priceIn = priceOut;
 		}
 		
-		if( i+1 == decision.size() && lastOp != 0 ){ //ultimo valor, fecha operacao em aberto
-			priceOut = source[i];
-			if( lastOp == 1 ){
-				profit = priceOut-priceIn;
-			} else if( lastOp == -1 ){
-				profit = priceIn-priceOut;
-			}
-				
-			if( profit >= 0 )
-				pos_trades++;
-			else 
-				neg_trades++;
-			funds += (profit*order_size)-taxes;
-		}
-		f_profit << funds << endl;
+		f_profit << accumProfit << endl;
 	}
 	f_profit.close();
 	
-	//~ +Trades,-Trades,Acc,InitS,FinalS,Return
-	float accuracy = (float)pos_trades/((float)pos_trades+(float)neg_trades)*100;
-	float ret = ((funds/init_funds)-1)*100;
-	cout << pos_trades << " " << neg_trades << " " << accuracy << "% " << init_funds << " " <<funds << " " << ret;
+	pos_trades--; //bug fix: entrada do primeiro trade esta contando pos_trade++
 	
-	//~ cout << "Positive trades: " << pos_trades << endl;
-	//~ cout << "Negative trades: " << neg_trades << endl;
-	//~ cout << "Accuracy: " << (float)pos_trades/((float)pos_trades+(float)neg_trades)*100 << "%" << endl;
-	//~ cout << "Initial funds: " << init_funds << endl;
-	//~ cout << "Final funds: " << funds << endl;
-	//~ cout << "Return: " << ((funds/init_funds)-1)*100 << "%" << endl;
+	//~ +Trades,-Trades,Acc,InitS,FinalS,Return
+	//~ float accuracy = (float)pos_trades/((float)pos_trades+(float)neg_trades)*100;
+	//~ float ret = ((funds/init_funds)-1)*100;
+	//~ cout << pos_trades << " " << neg_trades << " " << accuracy << "% " << init_funds << " " <<funds << " " << ret << "%" << endl;
+	
+	//~ +Trades,-Trades,Acc,Return
+	float accuracy = (float)pos_trades/((float)pos_trades+(float)neg_trades);
+	float ret = (accumProfit-1);
+	cout << pos_trades << " " << neg_trades << " " << accuracy << " " << ret << endl;
 }
 
 
@@ -71,8 +66,12 @@ void simulator::set_init_funds( float init ){
 	init_funds = init;
 }
 
-void simulator::set_taxes( float tax ){
-	taxes = tax;
+void simulator::set_taxes( float _tax ){
+	tax = _tax;
+}
+
+float simulator::taxes( float volume ){
+	return volume * tax;
 }
 
 void simulator::set_order_size( int order_sz ){
@@ -81,3 +80,4 @@ void simulator::set_order_size( int order_sz ){
 	else 
 		order_size = -1; //usar sempre o maximo possivel
 }
+

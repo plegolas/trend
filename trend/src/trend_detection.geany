@@ -18,13 +18,12 @@ long_line_column=72
 
 [files]
 current_page=0
-FILE_NAME_0=4342;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Ftrend_detection.cpp;0;4
-FILE_NAME_1=553;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fapproach_2.cpp;0;4
-FILE_NAME_2=1186;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2FsignalSource.cpp;0;4
-FILE_NAME_3=298;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fparams.cpp;0;4
-FILE_NAME_4=2969;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fsignal.cpp;0;4
-FILE_NAME_5=164;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fnikolov.cpp;0;4
-FILE_NAME_6=1922;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fset_util.cpp;0;4
+FILE_NAME_0=7928;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Ftrend_detection.cpp;0;4
+FILE_NAME_1=2757;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fapproach_2.cpp;0;4
+FILE_NAME_2=1360;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fparams.cpp;0;4
+FILE_NAME_3=597;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fnikolov.cpp;0;4
+FILE_NAME_4=1054;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fsimulator.cpp;0;4
+FILE_NAME_5=410;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fsimulator.hpp;0;4
 
 [file_prefs]
 final_new_line=true

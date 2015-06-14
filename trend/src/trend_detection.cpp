@@ -39,6 +39,8 @@ void final_result( list<detection> *detections );
 string final_result_csv( list<detection> *detections, int plussz, int minussz );
 string final_result_header();
 bool is_sets_creation( int argc, char *argv[] );
+void adjust_decision( vector<int> *decision );
+
 
 //~ 
 //~ Funcao principal
@@ -102,23 +104,12 @@ int main( int argc, char *argv[] ){
 	decision = detect( sigSource, rplus, rminus, params::gama, params::theta, params::detectionsLimit );
 
 	//ajusta o vetor de decisao
-	ofstream f_decision;
-	f_decision.open( "00decision" );
-	int last_decision = 0;
-	for( int i = 0; i < decision.size(); i++){
-		if( decision[i] != 0 )
-			if( decision[i] == last_decision )
-				decision[i] = 0;
-			else
-				last_decision = decision[i];
-		f_decision << decision[i] << endl;
-	}
-	f_decision.close();
+	adjust_decision( &decision );
 	
 	simulator sim;
-	sim.set_order_size( 300 ); //quantidade de acoes negociadas por ordem
-	sim.set_taxes( 10 ); //custo de uma operacao de compra ou venda
-	sim.set_init_funds( 10000 ); //valor financeiro inicial
+	//~ sim.set_order_size( 300 ); //quantidade de acoes negociadas por ordem
+	sim.set_taxes( 0.0025 ); //custo de uma operacao de compra ou venda - 0,25% do volume
+	//~ sim.set_init_funds( 10000 ); //valor financeiro inicial
 	sim.run( sigSource.getSource(), decision ); //executa simulacao
 	
 	//~ list<detection> detections = trends_result( sigSource, trends );
@@ -129,6 +120,34 @@ int main( int argc, char *argv[] ){
 }
 
 
+void adjust_decision( vector<int> *decision ){
+	//elimina decisoes redundantes (compra seguido de compra, etc)
+	int last_decision = 0;
+	for( int i = 0; i < decision->size(); i++){
+		if( (*decision)[i] != 0 )
+			if( (*decision)[i] == last_decision )
+				(*decision)[i] = 0;
+			else
+				last_decision = (*decision)[i];
+	}
+	
+	//fecha ultima operacao em aberto, se houver
+	int sum = 0;
+	for( int i = 0; i < decision->size(); i++){
+		sum += (*decision)[i];
+	}
+	if( sum != 0 ){
+		(*decision)[ decision->size()-1 ] = sum * -1;
+	}
+	
+	//escreve em arquivo
+	ofstream f_decision;
+	f_decision.open( "00decision" );
+	for( int i = 0; i < decision->size(); i++){
+		f_decision << (*decision)[i] << endl;
+	}
+	f_decision.close();
+}
 
 
 void load_source( signalSource *sigSource, const char* filename ){
@@ -261,12 +280,12 @@ string final_result_csv( list<detection> *detections, int plussz, int minussz ){
 
 string final_result_header(){
 	string line;
-	line = "Detected,";
+	//~ line = "Detected,";
 	line += "+Trades,";
 	line += "-Trades,";
 	line += "Acc,";
-	line += "InitS,";
-	line += "FinalS,";
+	//~ line += "InitS,";
+	//~ line += "FinalS,";
 	line += "Return";
 	return line;
 }
@@ -287,5 +306,7 @@ bool is_sets_creation( int argc, char *argv[] ){
 
 //~ Cabecalho da saida padrao, , , 
 //~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,NTREND,NTRESH,R+size,R-Size,+Trades,-Trades,Acc,InitS,FinalS,Return
-//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,NTREND,NTRESH,R+size,R-Size,+Trades,-Trades,Acc,InitS,FinalS,Return
+//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,NTREND,NTRESH,R+size,R-Size,+Trades,-Trades,Acc,Return
+//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,NTREND,NTRESH,R+size,R-Size,+Trades,-Trades,Acc,Return
+
 

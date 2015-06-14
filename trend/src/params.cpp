@@ -51,7 +51,7 @@ std::string params::to_string_csv(){
 }
 	
 bool params::initialize( int argc, char *argv[] ){
-	params_count = 8;
+	params_count = 6;
 	
 	//sem parametros, execucao com variaveis padrao
 	if( argc == 1 )
@@ -64,6 +64,12 @@ bool params::initialize( int argc, char *argv[] ){
 	//quantidade errada de parametros
 	if( argc < params_count +1 ){
 		std::clog << "Init error. argc = " << argc << ", params_count = " << params_count << std::endl;
+		std::clog << "argv =";
+		for( int i = 0; i < argc; i++ ){
+			std::clog << " " << argv[i] ;
+		}
+		std::clog << std::endl;
+		
 		return false;
 	}
 	
@@ -74,8 +80,8 @@ bool params::initialize( int argc, char *argv[] ){
 	NSMOOTH = atoi(argv[4]);
 	NREF = atoi(argv[5]);
 	NOBS = atoi(argv[6]);
-	NTREND = atoi(argv[7]);
-	NTRESH = atof(argv[8]);
+	//~ NTREND = atoi(argv[7]);
+	//~ NTRESH = atof(argv[8]);
 	
 	return true;
 }

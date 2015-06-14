@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#nome do arquivo que contera resultado
+OUT_FN="aabb"
+
 #ordem dos parametros
 # gama theta detectionsLimit NSMOOTH NREF NOBS NTREND NTRESH
 
@@ -33,8 +36,8 @@ detLimVec=(1 3 5)
 nSmoothVec=(1 5 10)
 nRefVec=(10 20 30)
 nObsVec=(5 10 15)
-nTrendVec=(5 10)
-nTreshVec=(0.1 0.12)
+nTrendVec=(1)
+nTreshVec=(1)
 
 #gamaVec=(0.1 1 10)
 #thetaVec=(0.65 1 3)
@@ -44,6 +47,9 @@ nTreshVec=(0.1 0.12)
 #nObsVec=(5 10 40)
 #nTrendVec=(5 10 15)
 #nTreshVec=(0.1 0.12)
+
+#limpa arquivo de saida
+cp /dev/null $OUT_FN
 
 for gama in ${gamaVec[@]} 
 do
@@ -65,7 +71,9 @@ do
 						do
 							for nTresh in ${nTreshVec[@]} 
 							do
-								./trend $gama $theta $detLim $nSmoot $nRef $nObs $nTrend $nTresh
+								RESULT=`./trend $gama $theta $detLim $nSmoot $nRef $nObs $nTrend $nTresh`
+								echo $RESULT
+								echo $RESULT >> aabb 
 							done
 						done
 					done

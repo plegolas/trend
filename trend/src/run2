@@ -1,0 +1,47 @@
+#!/bin/bash
+
+#nome do arquivo que contera resultado
+OUT_FN="aabb2"
+
+#ordem dos parametros
+# gama theta detectionsLimit NSMOOTH NREF NOBS NTREND NTRESH
+
+#tipos dos parametros
+# gama float
+# theta float
+# detectionsLimit int
+# NSMOOTH int
+# NREF int
+# NOBS int
+# NTREND int
+# NTRESH float
+
+#combinacoes a serem exploradas
+paramsList="
+10 1 5 5 30 10 1 1
+1 1 1 10 30 10 1 1
+10 1 5 10 20 5 1 1
+1 1 3 10 30 10 1 1
+1 1 5 10 30 10 1 1
+1 0.65 5 5 10 10 1 1
+"
+
+
+#limpa arquivo de saida
+cp /dev/null $OUT_FN
+
+IFS='
+'
+for params in $paramsList
+do
+	IFS=' '
+	par=($params)
+	RESULT=`./trend ${par[*]}`
+	echo $RESULT
+	echo $RESULT >> $OUT_FN
+done
+
+
+
+
+
