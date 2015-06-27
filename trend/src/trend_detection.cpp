@@ -1,45 +1,36 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
-#include "nikolov.hpp"
-#include "signal.hpp"
-#include "signalSource.hpp"
-#include "mytools.hpp"
-#include "params.hpp"
-#include "detection.hpp"
-#include "set_util.hpp"
-#include "approach_1.hpp"
-#include "approach_2.hpp"
-#include "simulator.hpp"
+#include <string>
+#include "../src/nikolov.hpp"
+#include "../src/signal.hpp"
+#include "../src/signalSource.hpp"
+#include "../src/mytools.hpp"
+#include "../src/params.hpp"
+#include "../src/detection.hpp"
+#include "../src/set_util.hpp"
+#include "../src/approach_1.hpp"
+#include "../src/approach_2.hpp"
+#include "../src/simulator.hpp"
 
 
-#define FLAG_CREATE_SETS "-c"
-
-//TODO: trocar TEST_FNs por nome do arquivo que contem os nomes dos arquivos do teste especifico
-
-#define TRAINING_SOURCE_FN "../data/00file_training"
-#define TEST_SOURCE_FN "../data/00file_test"
-#define VALIDATION_SOURCE_FN "../data/00file_validation"
-//~ #define TRAINING_SOURCE_FN "../data/PETR4.SA2"
-//~ #define TEST_SOURCE_FN "../data/PETR4.SA3"
-#define RPLUS_FN "../data/rplus"
-#define RMINUS_FN "../data/rminus"
-#define TRENDS_FN "../data/trend"
+//~ #define TRAINING_SOURCE_FN "00seno.out"
+//~ #define TEST_SOURCE_FN "00cosseno.out"
+//~ #define RPLUS_FN "../data/rplus"
+//~ #define RMINUS_FN "../data/rminus"
+//~ #define TRENDS_FN "../data/trend"
 #define LOG_FN "log"
 #define DETECTIONS_FN "detections"
+#define CONFIG_FN "00test_config"
 
 
 //~ funcoes
 void load_source( signalSource *sigSource, const char* filename );
-string new_filename( string fn, int nb );
-detection get_detection( signalSource source, signal sig );
-list<detection> trends_result( signalSource source, list< pair<time_t,signal> > trends );
-void print_detections( string fn, list<detection> *detections );
-void final_result( list<detection> *detections );
-string final_result_csv( list<detection> *detections, int plussz, int minussz );
-string final_result_header();
-bool is_sets_creation( int argc, char *argv[] );
 void adjust_decision( vector<int> *decision );
+float run( int *post, int *negt, float *result );
+void get_prices_test( float *price, string line );
+string save_best_parameters( float result );
+void load_files_config( vector<int>* smap, vector<int> *lmap, vector<string> *trsourcefn, vector<string> *tesourcefn );
 
 
 //~ 
@@ -54,52 +45,100 @@ int main( int argc, char *argv[] ){
 	
 	//inicializar parametros
 	params parameters;
-	if( !parameters.initialize( argc, argv ) ) {
-		cout << "Initialization error. Bad, bad parameters..." << endl;
-		return 1;
-	}
-	//~ parameters.print();
+	if( argc > 1 ){
+		if( !parameters.initialize( argc, argv ) ) {
+			cout << "Initialization error. Bad, bad parameters..." << endl;
+			return 1;
+		}
+		int post, negt;
+		float result;
+		run( &post, &negt, &result );
+		cout << parameters.to_string_csv() << post << " " << negt << " " << result << endl;
 	
+	} else {
+		
+		// linhas de teste
+		float gamaVec[] = {0.1, 1, 10};
+		float thetaVec[] = {0.65, 1, 3};
+		int detLimVec[] = {1, 3, 5};
+		int nSmoothVec[] = {1, 5, 10};
+		int nRefVec[] = {10, 30, 50};
+		int nObsVec[] = {5, 10, 20, 40};
+		vector<int> smaP = {5};		//short moving average period
+		vector<int> lmaP = {15};	//long moving average period
+		vector<string> trSourceFN = {"00seno.out"};
+		vector<string> teSourceFN = {"00cosseno.out"};
+		
+
+		//le arquivo de configuracao, salvando opcoes nos vetores 
+		load_files_config( &smaP, &lmaP, &trSourceFN, &teSourceFN );
+		
+		for( int i = 0; i < trSourceFN.size(); i++ ){
+			cout << "TR: " << trSourceFN[i] << "; TE: " << teSourceFN[i] << endl;
+			
+			//abre arquivo de resultado
+			ofstream f_result;
+			f_result.open( teSourceFN[i] + "TestResult" );
+			f_result << parameters.header_csv() << parameters.sep << "PosTrades" << parameters.sep << "NegTrades" << parameters.sep << "Result" << endl;
+			
+			for( float g : gamaVec ){
+				for( float t : thetaVec ){
+					for( int dl : detLimVec ){
+						for( int nsm : nSmoothVec ){
+							for( int nre : nRefVec ){
+								for( int nob : nObsVec ){
+									if( nob > nre ) continue; //condicao invalida onde o sinal observado eh maior que o referencia
+									
+									cout << "." << flush;
+									
+									parameters.set_params( g, t, dl, nsm, nre, nob, smaP[i], lmaP[i], trSourceFN[i], teSourceFN[i] );
+									int post, negt;
+									float result;
+									run( &post, &negt, &result );
+
+									//escreve resultado em arquivo
+									f_result << parameters.to_string_csv() << params::sep << post << params::sep << negt << params::sep << result << endl;
+								}
+							}
+						}
+					}
+				}
+			}
+			//fecha arquivo de rsultado
+			f_result.close();
+			cout << endl;
+		}
+	}
+}
+
+float run( int *post, int *negt, float *result ){
 	//conjuntos de exemplos positivos e negativos
 	vector<signal> rplus, rminus;
 	set_util setutil; //operacoes nos conjuntos
-	//~ approach_1 approach; //primeira abordagem
 	approach_2 approach; //segunda abordagem (com medias moveis)
+
+	params parameters;
+	//~ cout << parameters.to_string_csv() << " ";
+
 	
 	//serie temporal
 	signalSource sigSource;
-	
-	//~ if( is_sets_creation(argc, argv) ){
-		//carrega a serie temporal, constroi os conjuntos positivo e 
-		// negativo e os salva em arquivos
-		clog << "Build sets mode" << endl;
-		load_source( &sigSource, TRAINING_SOURCE_FN );
-		approach.build_sets( sigSource, &rplus, &rminus );
-		//~ setutil.print( RPLUS_FN, &rplus);
-		//~ setutil.print( RMINUS_FN, &rminus);
-		//~ return 0;
-	//~ }
-	
-	clog << "Run mode" << endl;
-	//~ cout << parameters.header_csv() << "," << final_result_header() << endl;
-	//~ cout << parameters.to_string_csv() << ",";
-	cout << parameters.to_string_csv() << " ";
+	//~ load_source( &sigSource, TRAINING_SOURCE_FN );
+	load_source( &sigSource, parameters.trFN.c_str() );
+	approach.build_sets( sigSource, &rplus, &rminus );
 	
 	//carrega os conjuntos positivo e negativo
 	if( rplus.empty() || rminus.empty() ){
 		cout << "At least one set is empty. Aborting." << endl;
 		return 1;
 	}
-	cout << rplus.size() << " " << rminus.size() << " ";
+	//~ cout << rplus.size() << " " << rminus.size() << " ";
 	setutil.transform( &rplus );
 	setutil.transform( &rminus );
 	
-	load_source( &sigSource, TEST_SOURCE_FN );
+	//~ load_source( &sigSource, TEST_SOURCE_FN );
+	load_source( &sigSource, parameters.teFN.c_str() );
 	
-	
-	//~ cout << "Detecting... " << endl;
-	
-	//~ list< pair<time_t,signal> > trends;
 	vector<int> decision;
 	decision = detect( sigSource, rplus, rminus, params::gama, params::theta, params::detectionsLimit );
 
@@ -107,18 +146,13 @@ int main( int argc, char *argv[] ){
 	adjust_decision( &decision );
 	
 	simulator sim;
-	//~ sim.set_order_size( 300 ); //quantidade de acoes negociadas por ordem
 	sim.set_taxes( 0.0025 ); //custo de uma operacao de compra ou venda - 0,25% do volume
-	//~ sim.set_init_funds( 10000 ); //valor financeiro inicial
-	sim.run( sigSource.getSource(), decision ); //executa simulacao
+	(*result) = sim.run( sigSource.getSource(), decision ); //executa simulacao	
+	*post = sim.pTrades();
+	*negt = sim.nTrades();
 	
-	//~ list<detection> detections = trends_result( sigSource, trends );
-	//~ print_detections( DETECTIONS_FN, &detections );
-//	//~ final_result( &detections );
-	//~ cout << final_result_csv( &detections, rplus.size(), rminus.size() ) << endl;
-	//~ cout << "-------------" << endl;
+	return *result;
 }
-
 
 void adjust_decision( vector<int> *decision ){
 	//elimina decisoes redundantes (compra seguido de compra, etc)
@@ -150,135 +184,66 @@ void adjust_decision( vector<int> *decision ){
 }
 
 
+void load_files_config( vector<int>* smap, vector<int> *lmap, vector<string> *trsourcefn, vector<string> *tesourcefn ){
+	
+	smap->clear();
+	lmap->clear();
+	trsourcefn->clear();
+	tesourcefn->clear();
+	
+	ifstream f_config (CONFIG_FN);
+	string line;
+	
+	getline( f_config, line );	//descarta cabecalho
+	while( !f_config.eof() ){
+		//~ getline( infile, line );
+		int p;
+		f_config >> p;
+		smap->push_back(p);
+		f_config >> p;
+		lmap->push_back(p);
+		
+		string fn; 
+		f_config >> fn;
+		trsourcefn->push_back(fn);
+		f_config >> fn >> ws;
+		tesourcefn->push_back(fn);
+		
+	}
+	f_config.close();
+}
+
+
 void load_source( signalSource *sigSource, const char* filename ){
 	sigSource->clear();
 	ifstream infile;
 	infile.open( filename );
 	string line;
 	
-	while( 	!infile.eof() ){
+	while( !infile.eof() ){
 		getline( infile, line );
-		time_t date;
 		float price;
-		get_prices_yahoo( &date, &price, line );
-		sigSource->add( date, price );
+		get_prices_test( &price, line );
+		sigSource->add( 0, price );
 	}
 	sigSource->finish();
 	infile.close();
-	clog << "Source data loaded" << endl;
 }
 
-string new_filename( string fn, int nb ){
-	char buffer[10];
-	sprintf(buffer, "%d", nb);
-	fn.append( buffer );
-	return fn;
+void get_prices_test( float *price, string line ){
+	sscanf(line.c_str(), "%f", price);
 }
 
-detection get_detection( signalSource source, signal sig ){
-	detection d;
-	d.max = d.first = source.lastValue().second;
-	d.time = source.lastValue().first;
-	d.sig = sig;
-	for( int i = 1; i < params::NTREND && source.hasData(); i++ ){
-		float val = source.nextValue().second;
-		if( val < 0.001 ) break; //------------- bug fix
-
-		d.last = val;
-		if( val > d.max ) 
-			d.max = val;
-	}
-	//~ d.last = source.lastValue().second;
-	d.after_detection = source.lastBlock();
-	return d;
+string save_best_parameters( float result ){
+	params parameters;
+	string str;
+	str += parameters.to_string_csv();
+	str += result;
+	return str;
 }
 
-list<detection> trends_result( signalSource source, list< pair<time_t,signal> > trends ){
-	list<detection> detections;
-	source.configure( params::NTREND );
-	for( pair<time_t,signal> p : trends ){
-		//encontra inicio da tendencia
-		while( source.hasData() && source.get_time() != p.first )
-			source.nextValue();
-		//preenche objeto detection
-		detection d = get_detection( source, p.second );
-		detections.push_back( d );
-	}
-	return detections;
-}
 
-void print_detections( string fn, list<detection> *detections ){
-	//date first last max
-	ofstream out (fn);
-	for( detection d : *detections ){
-		out << time_t2string(d.time) << ","
-			<< d.first << ","
-			<< d.last << ","
-			<< d.max << endl; 
-	}
-	out.close();
-}
-	
-void final_result( list<detection> *detections ){
-	int pos, neg;
-	pos = neg = 0;
-	float init_funds, funds;
-	init_funds = funds = 10000;
-	float profit = 0;
-	
-	for( detection d : *detections ){
-		if( d.first > d.last )
-			neg++;
-		else
-			pos++;
-		
-		float p = d.last/d.first;
-		funds *= p;
-	}
-	cout << "Trends detected: " << detections->size() << endl;
-	cout << "Positive trades: " << pos << endl;
-	cout << "Negative trades: " << neg << endl;
-	cout << "Accuracy: " << (float)pos/((float)pos+(float)neg)*100 << "%" << endl;
-	cout << "Initial funds: " << init_funds << endl;
-	cout << "Final funds: " << funds << endl;
-	cout << "Return: " << ((funds/init_funds)-1)*100 << "%" << endl;
-}
-
-string final_result_csv( list<detection> *detections, int plussz, int minussz ){
-	int pos, neg;
-	pos = neg = 0;
-	float init_funds, funds;
-	init_funds = funds = 10000;
-	float profit = 0;
-	
-	for( detection d : *detections ){
-		if( d.first > d.last )
-			neg++;
-		else
-			pos++;
-		
-		float p = d.last/d.first;
-		funds *= p;
-		if( funds < 1 ){
-			funds = funds;
-		}
-	}
-	
-	float accu = (float)pos/((float)pos+(float)neg)*100;
-	float fund_ret = ((funds/init_funds)-1)*100;
-	//~ "Trends detected" "Positive trades" "Negative trades" "Accuracy" 
-	//~ "Initial funds" "Final funds" "Return"
-	char cline[300];
-	//~ sprintf( cline, "%d,%d,%d,%.2lf,%.2f,%.2f,%.2f", (int)detections->size(),
-		//~ pos, neg, accu, init_funds, funds, fund_ret );
-	sprintf( cline, "%5d %5d %5d %5d %5d\t%.2lf\t%8.2f\t%8.2f\t%+6.2f%%", plussz, minussz, (int)detections->size(),
-		pos, neg, accu, init_funds, funds, fund_ret );
-	
-	std::string line = cline;
-	return line;
-}
-
-string final_result_header(){
+/*string final_result_header(){
 	string line;
 	//~ line = "Detected,";
 	line += "+Trades,";
@@ -288,24 +253,11 @@ string final_result_header(){
 	//~ line += "FinalS,";
 	line += "Return";
 	return line;
-}
-
-//verifica se devem ser criados os conjuntos positivo e negativo
-bool is_sets_creation( int argc, char *argv[] ){
-	if( argc > 1 ){
-		for( int i = 1; i < argc; i++ ){
-			if( strcmp( argv[i], FLAG_CREATE_SETS ) == 0 ){
-				return true;
-			}
-		}
-	}
-	return false;
-}
+}*/
 
 
 
 //~ Cabecalho da saida padrao, , , 
-//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,NTREND,NTRESH,R+size,R-Size,+Trades,-Trades,Acc,InitS,FinalS,Return
 //~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,sma,lma,R+size,R-Size,+Trades,-Trades,Acc,Return
 //~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,sma,lma,R+size,R-Size,+Trades,-Trades,Acc,Return
 
