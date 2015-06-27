@@ -17,13 +17,14 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=0
-FILE_NAME_0=7928;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Ftrend_detection.cpp;0;4
-FILE_NAME_1=2757;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fapproach_2.cpp;0;4
-FILE_NAME_2=1360;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fparams.cpp;0;4
-FILE_NAME_3=597;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fnikolov.cpp;0;4
-FILE_NAME_4=1054;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fsimulator.cpp;0;4
-FILE_NAME_5=410;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fsimulator.hpp;0;4
+current_page=6
+FILE_NAME_0=8103;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Ftrend_detection.cpp;0;4
+FILE_NAME_1=1384;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fapproach_2.cpp;0;4
+FILE_NAME_2=1353;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fparams.cpp;0;4
+FILE_NAME_3=667;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fsimulator.cpp;0;4
+FILE_NAME_4=462;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fsimulator.hpp;0;4
+FILE_NAME_5=2039;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fteste%20algoritmo%2Ftest_trend_detection.cpp;0;4
+FILE_NAME_6=360;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fnikolov.cpp;0;4
 
 [file_prefs]
 final_new_line=true
@@ -33,3 +34,11 @@ replace_tabs=false
 
 [VTE]
 last_dir=/home/marcelo
+
+[debugger]
+target=
+debugger=
+arguments=
+envvar_count=0
+watches_count=0
+breaks_count=0

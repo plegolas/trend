@@ -20,10 +20,14 @@ class simulator{
 	public:
 	simulator(){};
 	~simulator(){};
-	void run( vector<float> source, vector<int> decision );
+	float run( vector<float> source, vector<int> decision );
 	void set_init_funds( float init );
 	void set_taxes( float _tax );
 	void set_order_size( int order_sz );
+	
+	int pTrades();
+	int nTrades();
+	int finalProfit();
 
 };
 #endif

@@ -306,7 +306,7 @@ bool is_sets_creation( int argc, char *argv[] ){
 
 //~ Cabecalho da saida padrao, , , 
 //~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,NTREND,NTRESH,R+size,R-Size,+Trades,-Trades,Acc,InitS,FinalS,Return
-//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,NTREND,NTRESH,R+size,R-Size,+Trades,-Trades,Acc,Return
-//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,NTREND,NTRESH,R+size,R-Size,+Trades,-Trades,Acc,Return
+//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,sma,lma,R+size,R-Size,+Trades,-Trades,Acc,Return
+//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,sma,lma,R+size,R-Size,+Trades,-Trades,Acc,Return
 
 

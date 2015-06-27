@@ -7,7 +7,6 @@ vector<int> detect( signalSource source, vector<signal> rplus, vector<signal> rm
 				double gama, double theta, int detectionsLimit ){
 	
 	source.configure( params::NOBS + params::NSMOOTH );
-	//~ list< pair<time_t,signal> > detections;
 	vector<int> detections ( source.lenght(), 0 ); //vetor de decisao
 	int dIdx = params::NOBS + params::NSMOOTH -1; //indice do vetor de decisao
 	//TODO: verificar sincronia do dIdx com source
@@ -24,7 +23,6 @@ vector<int> detect( signalSource source, vector<signal> rplus, vector<signal> rm
 		for( signal r : rplus ){
 			float dist = distToReference( s, r );
 			posDist.push_back( dist );
-			//~ posDist.push_back( distToReference( s, r ) );
 		}
 		
 		//negative distance
@@ -33,8 +31,7 @@ vector<int> detect( signalSource source, vector<signal> rplus, vector<signal> rm
 		for( signal r : rminus ){
 			float dist = distToReference( s, r );
 			negDist.push_back( dist );
-			//~ negDist.push_back( distToReference( s, r ) );
-		}
+			}
 		
 		double probPos = probClass(posDist, gama);
 		double probNeg = probClass(negDist, gama);
@@ -43,8 +40,6 @@ vector<int> detect( signalSource source, vector<signal> rplus, vector<signal> rm
 		if( R > theta ){
 			cd++;
 			if( cd >= detectionsLimit ){
-				//~ pair<time_t,signal> p (source.get_time(), s);
-				//~ detections.push_back( p );
 				detections[dIdx] = 1;
 				cd = 0;
 			}

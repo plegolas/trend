@@ -1,7 +1,7 @@
 #include "simulator.hpp"
 
 
-void simulator::run( vector<float> source, vector<int> decision ){
+float simulator::run( vector<float> source, vector<int> decision ){
 	
 	float priceIn = 0, priceOut = 0; //preco de entrada e saida
 	float priceTax = 0; //taxas da operacao
@@ -57,10 +57,22 @@ void simulator::run( vector<float> source, vector<int> decision ){
 	
 	//~ +Trades,-Trades,Acc,Return
 	float accuracy = (float)pos_trades/((float)pos_trades+(float)neg_trades);
-	float ret = (accumProfit-1);
-	cout << pos_trades << " " << neg_trades << " " << accuracy << " " << ret << endl;
+	profit = (accumProfit-1);
+	//~ cout << pos_trades << " " << neg_trades << " " << accuracy << " " << profit << endl;
+	return profit;
 }
 
+int simulator::pTrades(){
+	return pos_trades;
+}
+
+int simulator::nTrades(){
+	return neg_trades;
+}
+
+int simulator::finalProfit(){
+	return profit;
+}
 
 void simulator::set_init_funds( float init ){
 	init_funds = init;
