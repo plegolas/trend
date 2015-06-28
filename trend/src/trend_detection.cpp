@@ -45,7 +45,7 @@ int main( int argc, char *argv[] ){
 	
 	//inicializar parametros
 	params parameters;
-	if( argc > 1 ){
+	if( argc > 2 ){
 		if( !parameters.initialize( argc, argv ) ) {
 			cout << "Initialization error. Bad, bad parameters..." << endl;
 			return 1;
@@ -69,9 +69,13 @@ int main( int argc, char *argv[] ){
 		vector<string> trSourceFN = {"00seno.out"};
 		vector<string> teSourceFN = {"00cosseno.out"};
 		
+		//~ string configfn = CONFIG_FN;
+		//~ if( argc == 2 ){
+			//~ configfn = argv[1];
+		//~ }
 
 		//le arquivo de configuracao, salvando opcoes nos vetores 
-		load_files_config( &smaP, &lmaP, &trSourceFN, &teSourceFN );
+		load_files_config( filein, &smaP, &lmaP, &trSourceFN, &teSourceFN );
 		
 		for( int i = 0; i < trSourceFN.size(); i++ ){
 			cout << "TR: " << trSourceFN[i] << "; TE: " << teSourceFN[i] << endl;
