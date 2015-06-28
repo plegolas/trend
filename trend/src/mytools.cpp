@@ -7,12 +7,12 @@ time_t str2time_t (const char *str){
 		sscanf(str, "%d/%d/%d", &d, &m, &y);
 	else
 		sscanf(str, "%d-%d-%d", &y, &m, &d);
-	
+
 	struct tm when = {0};
 	when.tm_year = y-1900;
 	when.tm_mon = m-1;
 	when.tm_mday = d;
-	
+
 	time_t converted;
 	converted = mktime(&when);
 
@@ -26,12 +26,12 @@ time_t string2time_t( string str ){
 void time_t2str (char *str, time_t t){
 	struct tm *t2;
 	t2 = localtime(&t);
-	
+
 	int day, mon, year;
 	day = t2->tm_mday;
 	mon = t2->tm_mon + 1;
 	year = t2->tm_year + 1900;
-	
+
 	sprintf(str, "%d/%d/%d", day, mon, year);
 }
 
@@ -68,5 +68,10 @@ void get_prices_yahoo( time_t *date, float *price, const char *line ){
 
 void get_prices_yahoo( time_t *date, float *price, string line ){
 	return get_prices_yahoo( date, price, line.c_str() );
+}
+
+void get_prices_yahoo( float *price, string line ){
+    time_t date_discart;
+	get_prices_yahoo( &date_discart, price, line.c_str() );
 }
 

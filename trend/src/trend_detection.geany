@@ -17,15 +17,14 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=7
+current_page=6
 FILE_NAME_0=1429;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fapproach_2.cpp;0;4
-FILE_NAME_1=1680;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fparams.cpp;0;4
+FILE_NAME_1=2473;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fparams.cpp;0;4
 FILE_NAME_2=1750;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fsimulator.cpp;0;4
 FILE_NAME_3=125;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fsimulator.hpp;0;4
-FILE_NAME_4=4520;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fteste%20algoritmo%2Ftest_trend_detection.cpp;0;4
-FILE_NAME_5=3399;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fteste%20algoritmo%2Ftrend_detection.cpp;0;4
-FILE_NAME_6=164;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fnikolov.cpp;0;4
-FILE_NAME_7=136;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fparams.hpp;0;4
+FILE_NAME_4=164;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fnikolov.cpp;0;4
+FILE_NAME_5=136;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fparams.hpp;0;4
+FILE_NAME_6=3982;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Ftrend_detection.cpp;0;4
 
 [file_prefs]
 final_new_line=true
@@ -34,12 +33,20 @@ strip_trailing_spaces=false
 replace_tabs=false
 
 [VTE]
-last_dir=/home/marcelo
+last_dir=/home/marcelo/Dropbox/tchelo/UFPEL/pesquisa/trend/src
+
+[build-menu]
+NF_00_LB=_Make
+NF_00_CM=make
+NF_00_WD=/home/marcelo/Dropbox/tchelo/UFPEL/pesquisa/trend/src
+NF_01_LB=Make Custom _Target
+NF_01_CM=make 
+NF_01_WD=
 
 [debugger]
-target=
-debugger=
-arguments=
+target=/home/marcelo/Dropbox/tchelo/UFPEL/pesquisa/trend/src/teste
+debugger=GDB
+arguments=00test_config2
 envvar_count=0
 watches_count=0
 breaks_count=0
