@@ -69,7 +69,7 @@ std::string params::to_string_csv(){
 }
 	
 bool params::initialize( int argc, char *argv[] ){
-	params_count = 8;
+	params_count = 10;
 	
 	//sem parametros, execucao com variaveis padrao
 	if( argc == 1 )
@@ -87,15 +87,22 @@ bool params::initialize( int argc, char *argv[] ){
 		return false;
 	}
 	
+	string tefn = argv[10];
+	tefn += argv[6];
+	
 	//quantidade correta de parametros, atribui os novos valores
-	gama = atof(argv[1]);
-	theta = atof(argv[2]);
-	detectionsLimit = atoi(argv[3]);
-	NSMOOTH = atoi(argv[4]);
-	NREF = atoi(argv[5]);
-	NOBS = atoi(argv[6]);
-	sma_period = atoi(argv[7]);
-	lma_period = atoi(argv[8]);
+	set_params( atof(argv[1]), atof(argv[2]), atoi(argv[3]), atoi(argv[4]), 
+				atoi(argv[5]), atoi(argv[6]), atoi(argv[7]), atoi(argv[8]), 
+				argv[9], tefn );
+	
+	//~ gama = atof(argv[1]);
+	//~ theta = atof(argv[2]);
+	//~ detectionsLimit = atoi(argv[3]);
+	//~ NSMOOTH = atoi(argv[4]);
+	//~ NREF = atoi(argv[5]);
+	//~ NOBS = atoi(argv[6]);
+	//~ sma_period = atoi(argv[7]);
+	//~ lma_period = atoi(argv[8]);
 	
 	return true;
 }

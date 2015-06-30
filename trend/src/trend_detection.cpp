@@ -97,8 +97,10 @@ int main( int argc, char *argv[] ){
 									if( nob > nre ) continue; //condicao invalida onde o sinal observado eh maior que o referencia
 
 									cout << "." << flush;
+									
+									string tefn = teSourceFN[i] + std::to_string(nob);
 
-									parameters.set_params( g, t, dl, nsm, nre, nob, smaP[i], lmaP[i], trSourceFN[i], teSourceFN[i] );
+									parameters.set_params( g, t, dl, nsm, nre, nob, smaP[i], lmaP[i], trSourceFN[i], tefn );
 									int post, negt;
 									float result;
 									run( &post, &negt, &result );
@@ -173,13 +175,14 @@ void adjust_decision( vector<int> *decision ){
 	}
 
 	//fecha ultima operacao em aberto, se houver
-	int sum = 0;
-	for( int i = 0; i < decision->size(); i++){
-		sum += (*decision)[i];
-	}
-	if( sum != 0 ){
-		(*decision)[ decision->size()-1 ] = sum * -1;
-	}
+	//~ int sum = 0;
+	//~ for( int i = 0; i < decision->size(); i++){
+		//~ sum += (*decision)[i];
+	//~ }
+	//~ if( sum != 0 ){
+		//~ (*decision)[ decision->size()-1 ] = sum * -1;
+	//~ }
+	(*decision)[ decision->size()-1 ] = last_decision * -1;
 
 	//escreve em arquivo
 	ofstream f_decision;
