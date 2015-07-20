@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <string>
+#include <sstream>
 #include "nikolov.hpp"
 #include "signal.hpp"
 #include "signalSource.hpp"
@@ -26,11 +27,16 @@
 //~ funcoes
 void load_source( signalSource *sigSource, const char* filename );
 void adjust_decision( vector<int> *decision );
-float run( int *post, int *negt, float *result );
+//~ float run( int *post, int *negt, float *result );
+int run( simulator* sim );
+string simulator_result_to_string( simulator sim );
 //void get_prices_test( float *price, string line );
 string save_best_parameters( float result );
 bool load_files_config( string configfn, vector<int>* smap, vector<int> *lmap, vector<string> *trsourcefn, vector<string> *tesourcefn );
 
+
+//~ globais
+params parameters;
 
 //~
 //~ Funcao principal
@@ -43,16 +49,19 @@ int main( int argc, char *argv[] ){
     std::clog.rdbuf( &flog ) ;
 
 	//inicializar parametros
-	params parameters;
+	//~ params parameters;
 	if( argc > 2 ){
 		if( !parameters.initialize( argc, argv ) ) {
 			cout << "Initialization error. Bad, bad parameters..." << endl;
 			return 1;
 		}
-		int post, negt;
-		float result;
-		run( &post, &negt, &result );
-		cout << parameters.to_string_csv() << post << " " << negt << " " << result << endl;
+		//~ int post, negt;
+		//~ float result;
+		//~ run( &post, &negt, &result );
+		simulator simResult;
+		run( &simResult );
+		cout << simulator_result_to_string( simResult ) << endl;
+		//~ cout << parameters.to_string_csv() << post << " " << negt << " " << result << endl;
 
 	} else {
 
@@ -100,12 +109,14 @@ int main( int argc, char *argv[] ){
 									string tefn = teSourceFN[i] + std::to_string(nob);
 
 									parameters.set_params( g, t, dl, nsm, nre, nob, smaP[i], lmaP[i], trSourceFN[i], tefn );
-									int post, negt;
-									float result;
-									run( &post, &negt, &result );
-
-									//escreve resultado em arquivo
-									f_result << parameters.to_string_csv() << params::sep << post << params::sep << negt << params::sep << result << endl;
+									//~ int post, negt;
+									//~ float result;
+									simulator simResult;
+									run( &simResult );
+									
+									//~ if( simResult != NULL )
+									f_result << simulator_result_to_string( simResult ) << endl;
+									//~ f_result << parameters.to_string_csv() << params::sep << post << params::sep << negt << params::sep << result << endl;
 								}
 							}
 						}
@@ -119,13 +130,13 @@ int main( int argc, char *argv[] ){
 	}
 }
 
-float run( int *post, int *negt, float *result ){
+int run( simulator *sim ){
 	//conjuntos de exemplos positivos e negativos
 	vector<signal> rplus, rminus;
 	set_util setutil; //operacoes nos conjuntos
 	approach_2 approach; //segunda abordagem (com medias moveis)
 
-	params parameters;
+	//~ params parameters;
 	//~ cout << parameters.to_string_csv() << " ";
 
 
@@ -153,13 +164,31 @@ float run( int *post, int *negt, float *result ){
 	//ajusta o vetor de decisao
 	adjust_decision( &decision );
 
-	simulator sim;
-	sim.set_taxes( 0.0025 ); //custo de uma operacao de compra ou venda - 0,25% do volume
-	(*result) = sim.run( sigSource.getSource(), decision ); //executa simulacao
-	*post = sim.pTrades();
-	*negt = sim.nTrades();
+	//~ simulator sim;
+	sim->set_taxes( 0.0025 ); //custo de uma operacao de compra ou venda - 0,25% do volume
+	sim->run( sigSource.getSource(), decision ); //executa simulacao
+	//~ *post = sim.pTrades();
+	//~ *negt = sim.nTrades();
 
-	return *result;
+	return 0;
+}
+
+string simulator_result_to_string( simulator sim ){
+	ostringstream result;
+	result << parameters.to_string_csv();
+	result << params::sep;
+	result << sim.positive_trades();
+	result << params::sep;
+	result << sim.negative_trades();
+	result << params::sep;
+	result << sim.trades_accuracy();
+	result << params::sep;
+	result << sim.average_win();
+	result << params::sep;
+	result << sim.average_loss();
+	result << params::sep;
+	result << sim.final_returns();
+	return result.str();
 }
 
 void adjust_decision( vector<int> *decision ){
@@ -275,6 +304,6 @@ string save_best_parameters( float result ){
 
 //~ Cabecalho da saida padrao, , ,
 //~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,sma,lma,R+size,R-Size,+Trades,-Trades,Acc,Return
-//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,sma,lma,R+size,R-Size,+Trades,-Trades,Acc,Return
+//~ gama,theta,detectionsLimit,NSMOOTH,NREF,NOBS,sma,lma,+Trades,-Trades,Acc,AvgWin,AvgLoss,Return
 
 

@@ -8,6 +8,7 @@ float simulator::run( vector<float> source, vector<int> decision ){
 	int lastOp = 0; //ultima operacao: 1=compra, -1=venda, 0=nenhuma
 	float accumProfit = 1; //lucro acumulado
 	funds = init_funds;
+	returns.clear();
 
 	ofstream f_profit;
 	f_profit.open( funds_filename );
@@ -40,6 +41,7 @@ float simulator::run( vector<float> source, vector<int> decision ){
 			//~ funds += (profit*order_size)-taxes;
 			//~ funds *= (1 + profit);
 			accumProfit *= (1 + profit);
+			returns.push_back(profit);
 			
 			priceIn = priceOut;
 		}
@@ -60,6 +62,54 @@ float simulator::run( vector<float> source, vector<int> decision ){
 	profit = (accumProfit-1);
 	//~ cout << pos_trades << " " << neg_trades << " " << accuracy << " " << profit << endl;
 	return profit;
+}
+
+float simulator::final_returns(){
+	float ret = 1;
+	for( float f : returns )
+		ret *= (1 + f);
+	return ret;
+}
+
+int simulator::positive_trades(){
+	int total = 0;
+	for( int i = 1; i < returns.size(); i++ )
+		if( returns[i] >= 0 ) 
+			total++;
+	return total;
+}
+
+int simulator::negative_trades(){
+	int total = 0;
+	for( int i = 1; i < returns.size(); i++ )
+		if( returns[i] < 0 ) 
+			total++;
+	return total;
+}
+
+float simulator::average_win(){
+	float total = 0;
+	for( int i = 1; i < returns.size(); i++ )
+		if( returns[i] >= 0 ) 
+			total += returns[i];
+	total = total/(float) positive_trades();
+	return total;
+}
+
+float simulator::average_loss(){
+	float total = 0;
+	for( int i = 1; i < returns.size(); i++ )
+		if( returns[i] < 0 ) 
+			total += returns[i];
+	total = total/(float) negative_trades();
+	return total;
+}
+
+float simulator::trades_accuracy(){
+	float pt = (float)positive_trades();
+	float nt = (float) negative_trades();
+	float acc = pt/(nt+pt);
+	return acc;
 }
 
 int simulator::pTrades(){

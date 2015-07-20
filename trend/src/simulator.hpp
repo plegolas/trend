@@ -15,12 +15,22 @@ class simulator{
 	int order_size = 100; //quantidade de ativos por operacao. -1 = maximo
 	float profit = 0;
 	
+	vector<float> returns;
+	
 	float taxes( float volume );
 	
 	public:
 	simulator(){};
 	~simulator(){};
 	float run( vector<float> source, vector<int> decision );
+	
+	float final_returns();
+	int positive_trades();
+	int negative_trades();
+	float average_win();
+	float average_loss();
+	float trades_accuracy();
+	
 	void set_init_funds( float init );
 	void set_taxes( float _tax );
 	void set_order_size( int order_sz );
