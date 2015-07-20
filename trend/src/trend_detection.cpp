@@ -7,7 +7,6 @@
 #include "signalSource.hpp"
 #include "mytools.hpp"
 #include "params.hpp"
-#include "detection.hpp"
 #include "set_util.hpp"
 #include "approach_1.hpp"
 #include "approach_2.hpp"
@@ -61,9 +60,9 @@ int main( int argc, char *argv[] ){
 		float gamaVec[] = {0.1, 1, 10};
 		float thetaVec[] = {0.65, 1, 3};
 		int detLimVec[] = {1, 3, 5};
-		int nSmoothVec[] = {1, 5, 10};
-		int nRefVec[] = {10, 30, 50};
-		int nObsVec[] = {5, 10, 20, 40};
+		int nSmoothVec[] = {1, 5, 10, 20, 40};
+		int nRefVec[] = {10, 30, 50, 80, 100};
+		int nObsVec[] = {5, 10, 20, 40, 80};
 		vector<int> smaP = {5};		//short moving average period
 		vector<int> lmaP = {15};	//long moving average period
 		vector<string> trSourceFN = {"00seno.out"};
@@ -97,7 +96,7 @@ int main( int argc, char *argv[] ){
 									if( nob > nre ) continue; //condicao invalida onde o sinal observado eh maior que o referencia
 
 									cout << "." << flush;
-									
+
 									string tefn = teSourceFN[i] + std::to_string(nob);
 
 									parameters.set_params( g, t, dl, nsm, nre, nob, smaP[i], lmaP[i], trSourceFN[i], tefn );
