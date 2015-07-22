@@ -2,8 +2,7 @@
 
 //-----------------------------
 
-//~ list< pair<time_t,signal> > detect( signalSource source, vector<signal> rplus, vector<signal> rminus, 
-vector<int> detect( signalSource source, vector<signal> rplus, vector<signal> rminus, 
+vector<int> detect( signalSource source, vector<signal> rplus, vector<signal> rminus, vector<signal> rzero,
 				double gama, double theta, int detectionsLimit ){
 	
 	source.configure( params::NOBS + params::NSMOOTH );
@@ -11,46 +10,81 @@ vector<int> detect( signalSource source, vector<signal> rplus, vector<signal> rm
 	int dIdx = params::NOBS + params::NSMOOTH -1; //indice do vetor de decisao
 	//TODO: verificar sincronia do dIdx com source
 	
-	int cd = 0; //consecutive detections
+	_position position = pout;
+	int cpd = 0; //consecutive positive detections
+	int cnd = 0; //consecutive negative detections
+	dIdx--;
 	do{
+		dIdx++;
 		signal s = source.nextBlock(); //updateObservations function
 		s.transform();
 		s.pop_front( params::NSMOOTH );
 		
-		//positive distance
-		list<float> posDist;
-		posDist.clear();
-		for( signal r : rplus ){
-			float dist = distToReference( s, r );
-			posDist.push_back( dist );
-		}
-		
-		//negative distance
-		list<float> negDist;
-		negDist.clear();
-		for( signal r : rminus ){
-			float dist = distToReference( s, r );
-			negDist.push_back( dist );
-			}
-		
-		double probPos = probClass(posDist, gama);
-		double probNeg = probClass(negDist, gama);
-		double R = probPos / probNeg;
-		
-		if( R > theta ){
-			cd++;
-			if( cd >= detectionsLimit ){
+		double prob;
+		//test detection for long positions (buy)
+		if( position != plong ){
+			prob = nikosProbability( s, rplus, rzero, gama);
+			if( detection( prob, theta, &cpd, detectionsLimit ) ){
 				detections[dIdx] = 1;
-				cd = 0;
+				position = plong;
+				cnd = 0;
+				continue;
 			}
-		} else {
-			detections[dIdx] = -1;
-			cd = 0;
 		}
-		dIdx++;
+		
+		//test detection for short positions (sell)
+		if( position != pshort ){
+			prob = nikosProbability( s, rminus, rzero, gama);
+			if( detection( prob, theta, &cnd, detectionsLimit ) ){
+				detections[dIdx] = -1;
+				position = pshort;
+				cpd = 0;
+			}
+		}
 	}while(source.hasData());
 	
 	return detections;
+}
+
+
+//----------------------------
+
+int detection( double prob, double theta, int *counter, int detectionsLimit ){
+	if( prob > theta ){
+		(*counter)++;
+		if( *counter >= detectionsLimit ){
+			*counter = 0;
+			return 1;
+		}
+	} else {
+		*counter = 0;
+	}
+	return 0;
+}
+
+//----------------------------
+
+double nikosProbability( signal s, vector<signal> rplus, vector<signal> rminus, double gama){
+	//positive distance
+	list<float> posDist;
+	posDist.clear();
+	for( signal r : rplus ){
+		float dist = distToReference( s, r );
+		posDist.push_back( dist );
+	}
+
+	//negative distance
+	list<float> negDist;
+	negDist.clear();
+	for( signal r : rminus ){
+		float dist = distToReference( s, r );
+		negDist.push_back( dist );
+	}
+
+	double probPos = probClass(posDist, gama);
+	double probNeg = probClass(negDist, gama);
+	double R = probPos / probNeg;
+	return R;
 }
 
 //----------------------------

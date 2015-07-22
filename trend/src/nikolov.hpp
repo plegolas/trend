@@ -9,9 +9,15 @@
 #include "signalSource.hpp"
 #include "params.hpp"
 
-vector<int> detect( signalSource source, vector<signal> rplus, vector<signal> rminus, 
+enum _position { pout, plong, pshort };
+
+vector<int> detect( signalSource source, vector<signal> rplus, vector<signal> rminus, vector<signal> rzero, 
 //~ list< pair<time_t,signal> > detect( signalSource source, vector<signal> rplus, vector<signal> rminus, 
 				double gama, double theta, int detectionsLimit );
+
+double nikosProbability( signal s, vector<signal> rplus, vector<signal> rminus, double gama);
+
+int detection( double prob, double theta, int *counter, int detectionsLimit );
 
 float distToReference( signal s, signal r );
 

@@ -30,6 +30,7 @@ void adjust_decision( vector<int> *decision );
 //~ float run( int *post, int *negt, float *result );
 int run( simulator* sim );
 string simulator_result_to_string( simulator sim );
+string header_csv_to_string();
 //void get_prices_test( float *price, string line );
 string save_best_parameters( float result );
 bool load_files_config( string configfn, vector<int>* smap, vector<int> *lmap, vector<string> *trsourcefn, vector<string> *tesourcefn );
@@ -94,7 +95,8 @@ int main( int argc, char *argv[] ){
 			//abre arquivo de resultado
 			ofstream f_result;
 			f_result.open( teSourceFN[i] + "TestResult" );
-			f_result << parameters.header_csv() << parameters.sep << "PosTrades" << parameters.sep << "NegTrades" << parameters.sep << "Result" << endl;
+			//~ f_result << parameters.header_csv() << parameters.sep << "PosTrades" << parameters.sep << "NegTrades" << parameters.sep << "Result" << endl;
+			f_result << header_csv_to_string() << endl;
 
 			for( float g : gamaVec ){
 				for( float t : thetaVec ){
@@ -132,7 +134,7 @@ int main( int argc, char *argv[] ){
 
 int run( simulator *sim ){
 	//conjuntos de exemplos positivos e negativos
-	vector<signal> rplus, rminus;
+	vector<signal> rplus, rminus, rzero;
 	set_util setutil; //operacoes nos conjuntos
 	approach_2 approach; //segunda abordagem (com medias moveis)
 
@@ -142,24 +144,24 @@ int run( simulator *sim ){
 
 	//serie temporal
 	signalSource sigSource;
-	//~ load_source( &sigSource, TRAINING_SOURCE_FN );
 	load_source( &sigSource, parameters.trFN.c_str() );
-	approach.build_sets( sigSource, &rplus, &rminus );
+	approach.build_sets( sigSource, &rplus, &rminus, &rzero );
 
-	//carrega os conjuntos positivo e negativo
-	if( rplus.empty() || rminus.empty() ){
+	//carrega os conjuntos positivo, negativo e zero
+	if( rplus.empty() || rminus.empty() || rzero.empty() ){
 		cout << "At least one set is empty. Aborting." << endl;
 		return 1;
 	}
 	//~ cout << rplus.size() << " " << rminus.size() << " ";
 	setutil.transform( &rplus );
 	setutil.transform( &rminus );
+	setutil.transform( &rzero );
 
 	//~ load_source( &sigSource, TEST_SOURCE_FN );
 	load_source( &sigSource, parameters.teFN.c_str() );
 
 	vector<int> decision;
-	decision = detect( sigSource, rplus, rminus, params::gama, params::theta, params::detectionsLimit );
+	decision = detect( sigSource, rplus, rminus, rzero, params::gama, params::theta, params::detectionsLimit );
 
 	//ajusta o vetor de decisao
 	adjust_decision( &decision );
@@ -300,6 +302,24 @@ string save_best_parameters( float result ){
 	return line;
 }*/
 
+string header_csv_to_string(){
+	ostringstream result;
+	result << parameters.header_csv();
+	result << params::sep;
+	result << "PosTrades";
+	result << params::sep;
+	result << "NegTrades";
+	result << params::sep;
+	result << "Acc";
+	result << params::sep;
+	result << "AvgWin";
+	result << params::sep;
+	result << "AvgLoss";
+	result << params::sep;
+	result << "Return";
+	return result.str();
+}
+ 
 
 
 //~ Cabecalho da saida padrao, , ,

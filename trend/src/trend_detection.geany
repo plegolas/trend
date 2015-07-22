@@ -17,8 +17,13 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=0
-FILE_NAME_0=1423;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Ftrend_detection.cpp;0;4
+current_page=1
+FILE_NAME_0=8184;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Ftrend_detection.cpp;0;4
+FILE_NAME_1=2832;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fsimulator.cpp;0;4
+FILE_NAME_2=1335;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Ftrend_ma.cpp;0;4
+FILE_NAME_3=2111;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fapproach_2.cpp;0;4
+FILE_NAME_4=1936;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fparams.cpp;0;4
+FILE_NAME_5=588;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmarcelo%2FDropbox%2Ftchelo%2FUFPEL%2Fpesquisa%2Ftrend%2Fsrc%2Fsimulator.hpp;0;4
 
 [file_prefs]
 final_new_line=true
