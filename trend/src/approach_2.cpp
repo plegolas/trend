@@ -1,10 +1,15 @@
 #include "approach_2.hpp"
 
-//
+
+
+//funcao de mascara, para compatibilidade com mesma chamada de approach_3
+void approach_2::build_sets( signalSource source, vector<signal> *rplus, vector<signal> *rminus, vector<signal> *rzero ){
+	build_sets( source, rplus, rminus );
+}
 
 //criar um conjunto de sinais positivos e negativos baseando-se em 
 // cruzamentos de medias moveis
-void approach_2::build_sets( signalSource source, vector<signal> *rplus, vector<signal> *rminus, vector<signal> *rzero ){
+void approach_2::build_sets( signalSource source, vector<signal> *rplus, vector<signal> *rminus ){
 	//testa tamanho da fonte com tamanho da maior MM
 	if( source.lenght() < params::lma_period ){
 		clog << "ERROR: source shorter than long MA" << endl;
@@ -20,49 +25,20 @@ void approach_2::build_sets( signalSource source, vector<signal> *rplus, vector<
 		//~ cout << decision[i] << endl;
 	//~ }
 	
-	//cria os conjuntos R+, R- e R0 baseando-se no vetor de decisao das MMs
+	//cria os conjuntos R+ e R- baseando-se no vetor de decisao das MMs
 	int sigSize = params::NREF + params::NSMOOTH; //tamanho minimo da referencia
 	for( int i = sigSize; i < decision.size(); i++ ){
 		if( decision[i] == 0 ) continue;
-
-		vector<float> vaux( &(vsource[i-sigSize+1]), &(vsource[i+1]) );
-		signal s( vaux );
 		if( decision[i] == 1 ){ //cross up
-			if( positive_trade( vsource, decision, i, 1 ) )
-				rplus->push_back( s );
-			else
-				rzero->push_back( s );
+			vector<float> vaux( &(vsource[i-sigSize+1]), &(vsource[i+1]) );
+			signal s( vaux );
+			rplus->push_back( s );
 		} else if( decision[i] == -1 ){ //cross down
-			if( positive_trade( vsource, decision, i, -1 ) )
-				rminus->push_back( s );
-			else
-				rzero->push_back( s );
+			vector<float> vaux( &(vsource[i-sigSize+1]), &(vsource[i+1]) );
+			signal s( vaux );
+			rminus->push_back( s );
 		}
 	}
-	
-	//debug
-	//~ cout << "rminus" << endl;
-	//~ for( signal s : *rminus ){
-		//~ s.print();
-	//~ } 	
-	//~ cout << "rplus" << endl;
-	//~ for( signal s : *rplus ){
-		//~ s.print();
-	//~ } 	
-}
-
-int approach_2::positive_trade( vector<float> source, vector<int> decision, int i, int order_side ){
-	float price_in = source[i];
-	float price_out = 0;
-	for( ; i < source.size(); i++ )
-		if( decision[i] == order_side*-1 )
-			break;
-	if( i >= source.size() ) 
-		i--;
-	price_out = source[i];
-	price_out -= price_in;
-	price_out *= order_side;
-	return (price_out > 0);
 }
 
 

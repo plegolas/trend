@@ -7,6 +7,7 @@
 #include "simulator.hpp"
 
 #define SWAPE(x,y) {int t;t=x;x=y;y=t;}
+#define SEP ';'
 
 using namespace std;
 
@@ -19,7 +20,7 @@ vector<int> decision_ma( vector<float> vsource, int period1, int period2 );
 int main( int argc, char** argv){
 	
 	if( argc != 5 ){
-		cerr << "Usage:\n%s <csv training> <csv test> <short moving average> <long moving average>" << endl;
+		cerr << "Usage:\n" << argv[0] << " <csv training> <csv test> <short moving average> <long moving average>" << endl;
 		return( 1 );
 	}
 	
@@ -42,11 +43,10 @@ int main( int argc, char** argv){
 	
 	simulator sim;
 	sim.set_taxes( 0.0025 ); //custo de uma operacao de compra ou venda - 0,25% do volume
-	float result = sim.run( source, decision ); //executa simulacao
-	//~ *post = sim.pTrades();
-	//~ *negt = sim.nTrades();
-
-	//~ return *result;
+	sim.run( source, decision ); //executa simulacao
+	
+	cout << sim.result_header( SEP ) << endl;
+	cout << sim.result_to_string( SEP ) << endl;
 }
 
 //Carrega os arquivos de treino e teste, adicionando ao inicio de teste um 

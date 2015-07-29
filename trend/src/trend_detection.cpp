@@ -3,7 +3,8 @@
 #include <cstdlib>
 #include <string>
 #include <sstream>
-#include "nikolov.hpp"
+#include "nikolov1.hpp"
+#include "nikolov2.hpp"
 #include "signal.hpp"
 #include "signalSource.hpp"
 #include "mytools.hpp"
@@ -11,6 +12,7 @@
 #include "set_util.hpp"
 #include "approach_1.hpp"
 #include "approach_2.hpp"
+#include "approach_3.hpp"
 #include "simulator.hpp"
 
 
@@ -111,14 +113,10 @@ int main( int argc, char *argv[] ){
 									string tefn = teSourceFN[i] + std::to_string(nob);
 
 									parameters.set_params( g, t, dl, nsm, nre, nob, smaP[i], lmaP[i], trSourceFN[i], tefn );
-									//~ int post, negt;
-									//~ float result;
 									simulator simResult;
 									run( &simResult );
 									
-									//~ if( simResult != NULL )
 									f_result << simulator_result_to_string( simResult ) << endl;
-									//~ f_result << parameters.to_string_csv() << params::sep << post << params::sep << negt << params::sep << result << endl;
 								}
 							}
 						}
@@ -136,11 +134,10 @@ int run( simulator *sim ){
 	//conjuntos de exemplos positivos e negativos
 	vector<signal> rplus, rminus, rzero;
 	set_util setutil; //operacoes nos conjuntos
-	approach_2 approach; //segunda abordagem (com medias moveis)
-
-	//~ params parameters;
-	//~ cout << parameters.to_string_csv() << " ";
-
+	approach_2 approach; //segunda abordagem (com medias moveis e 1 nikolov)
+	//~ approach_3 approach; //terceira abordagem (com medias moveis e 2 nikolovs)
+	nikolov1 niko; //1 nikolov apenas
+	//~ nikolov2 niko; //2 nikolovs
 
 	//serie temporal
 	signalSource sigSource;
@@ -148,10 +145,10 @@ int run( simulator *sim ){
 	approach.build_sets( sigSource, &rplus, &rminus, &rzero );
 
 	//carrega os conjuntos positivo, negativo e zero
-	if( rplus.empty() || rminus.empty() || rzero.empty() ){
-		cout << "At least one set is empty. Aborting." << endl;
-		return 1;
-	}
+	//~ if( rplus.empty() || rminus.empty() || rzero.empty() ){
+		//~ cout << "At least one set is empty. Aborting." << endl;
+		//~ return 1;
+	//~ }
 	//~ cout << rplus.size() << " " << rminus.size() << " ";
 	setutil.transform( &rplus );
 	setutil.transform( &rminus );
@@ -161,7 +158,7 @@ int run( simulator *sim ){
 	load_source( &sigSource, parameters.teFN.c_str() );
 
 	vector<int> decision;
-	decision = detect( sigSource, rplus, rminus, rzero, params::gama, params::theta, params::detectionsLimit );
+	decision = niko.detect( sigSource, rplus, rminus, rzero, params::gama, params::theta, params::detectionsLimit );
 
 	//ajusta o vetor de decisao
 	adjust_decision( &decision );

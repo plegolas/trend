@@ -2,6 +2,7 @@
 #define SIMULATOR_HPP
 
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <vector>
 
@@ -24,6 +25,8 @@ class simulator{
 	~simulator(){};
 	float run( vector<float> source, vector<int> decision );
 	
+	string result_to_string( char sep );
+	string result_header( char sep );
 	float final_returns();
 	int positive_trades();
 	int negative_trades();

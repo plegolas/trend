@@ -64,6 +64,38 @@ float simulator::run( vector<float> source, vector<int> decision ){
 	return profit;
 }
 
+string simulator::result_to_string( char sep ){
+	ostringstream result;
+	result << positive_trades();
+	result << sep;
+	result << negative_trades();
+	result << sep;
+	result << trades_accuracy();
+	result << sep;
+	result << average_win();
+	result << sep;
+	result << average_loss();
+	result << sep;
+	result << final_returns();
+	return result.str();
+}
+
+string simulator::result_header( char sep ){
+	ostringstream result;
+	result << "PosTrades";
+	result << sep;
+	result << "NegTrades";
+	result << sep;
+	result << "Acc";
+	result << sep;
+	result << "AvgWin";
+	result << sep;
+	result << "AvgLoss";
+	result << sep;
+	result << "Return";
+	return result.str();
+}
+
 float simulator::final_returns(){
 	float ret = 1;
 	for( float f : returns )
