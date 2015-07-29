@@ -1,8 +1,8 @@
-#include "nikolov.hpp"
+#include "nikolov2.hpp"
 
 //-----------------------------
 
-vector<int> detect( signalSource source, vector<signal> rplus, vector<signal> rminus, vector<signal> rzero,
+vector<int> nikolov2::detect( signalSource source, vector<signal> rplus, vector<signal> rminus, vector<signal> rzero,
 				double gama, double theta, int detectionsLimit ){
 	
 	source.configure( params::NOBS + params::NSMOOTH );
@@ -49,7 +49,7 @@ vector<int> detect( signalSource source, vector<signal> rplus, vector<signal> rm
 
 //----------------------------
 
-int detection( double prob, double theta, int *counter, int detectionsLimit ){
+int nikolov2::detection( double prob, double theta, int *counter, int detectionsLimit ){
 	if( prob > theta ){
 		(*counter)++;
 		if( *counter >= detectionsLimit ){
@@ -64,7 +64,7 @@ int detection( double prob, double theta, int *counter, int detectionsLimit ){
 
 //----------------------------
 
-double nikosProbability( signal s, vector<signal> rplus, vector<signal> rminus, double gama){
+double nikolov2::nikosProbability( signal s, vector<signal> rplus, vector<signal> rminus, double gama){
 	//positive distance
 	list<float> posDist;
 	posDist.clear();
@@ -89,7 +89,7 @@ double nikosProbability( signal s, vector<signal> rplus, vector<signal> rminus, 
 
 //----------------------------
 
-float distToReference( signal s, signal r ){
+float nikolov2::distToReference( signal s, signal r ){
 	int n = s.lenght();
 	int m = r.lenght();
 	
@@ -104,7 +104,7 @@ float distToReference( signal s, signal r ){
 
 //----------------------------
 
-float dist( signal s, signal t ){
+float nikolov2::dist( signal s, signal t ){
 	float d = 0;
 	for( int i = 0; i < s.lenght(); i++ ){
 		d += pow( s.at(i)-t.at(i), 2 );
@@ -115,7 +115,7 @@ float dist( signal s, signal t ){
 
 //----------------------------
 
-double probClass( list<float> dist, double gama ){
+double nikolov2::probClass( list<float> dist, double gama ){
 	double p = 0;
 	for( float d : dist ){
 		p += exp( -1*gama*d );
